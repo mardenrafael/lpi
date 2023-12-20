@@ -1,0 +1,50 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:16
+    container_name: login-db
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready', '-U', '${PGUSER}', '-d', '${POSTGRES_DB}']
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: .
+    container_name: login-api
+    env_file:
+      - .env
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://api:${PORT}/health/check || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/home/node/login-api
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: 'service_healthy'
+        restart: true
+
+networks:
+  app-network:
+
+volumes:
+  db_data:

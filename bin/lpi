@@ -1,0 +1,65 @@
+#!/bin/bash
+
+compose_file_name="docker-compose.dev.yaml"
+compose_file_path="${PROJECT_ROOT}/${compose_file_name}"
+
+if [ -z "$PROJECT_ROOT" ]; then
+    echo "Erro ao ler a raiz do projeto. Você executou \"./bin/config.sh\"?" >&2
+    exit 1
+fi
+
+exibir_help() {
+    if [ ! -e "${PROJECT_ROOT}/package.json" ]; then
+        echo "Não foi possível encontrar o arquivo package.json"
+        exit 1
+    fi
+
+    local project_version
+    project_version=$(jq -r ".version" "${PROJECT_ROOT}/package.json")
+
+    echo "########## LPI ##########"
+    echo ""
+    echo "Versão do projeto:        ${project_version}"
+    echo "Pasta raiz do projeto:    ${PROJECT_ROOT}"
+    echo ""
+    echo "Sub-comandos:"
+    echo "  up          Inicia a aplicação com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  down        Para a aplicação com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  ps          Inspeciona os container em execução com a configuração do arquivo docker-compose.dev.yaml"
+    echo ""
+    echo "Opções:"
+    echo "  -h          Exibe o menu de ajuda"
+}
+
+if [ ! -e "$compose_file_path" ]; then
+    echo "Não foi possível encontrar o arquivo ${compose_file_name}"
+    exit 1
+fi
+
+if [ ! -z "$1" ]; then
+    case $1 in
+        -h)
+            exibir_help
+            exit 0
+            ;;
+    esac
+fi
+
+case $1 in
+    up)
+        echo "Iniciando containers com configuração do ${compose_file_name}"
+        docker compose -f "$compose_file_path" up --detach
+        echo "Containers iniciados com sucesso."
+        ;;
+    down)
+        echo "Parando containers com configuração do ${compose_file_name}"
+        docker compose -f "$compose_file_path" down
+        echo "Containers parados com sucesso."
+        ;;
+    ps)
+        docker compose -f "$compose_file_path" ps
+        ;;
+    *)
+        echo "Argumento desconhecido. Digite lpi -h para obter ajuda."
+        ;;
+esac

@@ -4,7 +4,6 @@ import { LogService } from './log.service';
 
 @Module({
   providers: [LogInterceptor, LogService],
-
   exports: [LogInterceptor, LogService],
 })
 export class LogModule {}

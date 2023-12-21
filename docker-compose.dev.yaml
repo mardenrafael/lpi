@@ -13,10 +13,10 @@ services:
     healthcheck:
       test:
         ['CMD-SHELL', 'pg_isready', '-U', '${PGUSER}', '-d', '${POSTGRES_DB}']
-      interval: 15s
-      timeout: 10s
+      interval: 5s
+      timeout: 3s
       retries: 3
-      start_period: 10s
+      start_period: 5s
     networks:
       - app-network
 
@@ -28,12 +28,12 @@ services:
       - .env
     healthcheck:
       test: ['CMD-SHELL', 'curl -f http://api:${PORT}/health/check || exit 1']
-      interval: 10s
-      timeout: 5s
+      interval: 5s
+      timeout: 3s
       retries: 3
       start_period: 5s
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
     volumes:
       - ./:/home/node/login-api
     networks:

@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LogService } from 'src/log/log.service';
 
 @Injectable()
 export class UserService {
   private readonly users: User[] = [];
+
+  constructor(private readonly logService: LogService) {}
 
   async findOneByEmail(userEmail: string): Promise<User> {
     const user: User[] = this.users.filter(({ email }) => email === userEmail);
@@ -27,6 +30,7 @@ export class UserService {
   }
 
   async getAll(): Promise<User[]> {
+    this.logService.log(UserService.name, 'kaskdas');
     return this.users;
   }
 

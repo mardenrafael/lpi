@@ -30,7 +30,7 @@ export class UserService {
   }
 
   async getAll(): Promise<User[]> {
-    this.logService.log(UserService.name, 'kaskdas');
+    this.logService.log(UserService.name, null, 'kaskdas');
     return this.users;
   }
 

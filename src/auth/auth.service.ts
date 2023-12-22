@@ -1,8 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { SignInDtoRequest } from './dto/sign-in-request.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
+import { Constants } from 'src/constants/constants';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +30,10 @@ export class AuthService {
     }
 
     const currentDateInSeconds = Math.round(Date.now() / 1000);
-    const expirationDateInSeconds = Math.round(currentDateInSeconds + 5 * 60);
+    const expirationDateInSeconds = Math.round(
+      currentDateInSeconds + Constants.JWT_TIME_TO_EXPIRE * 60,
+    );
+
     const tokenUuid = crypto.randomUUID();
     const userPayload = {
       sub: user.id,

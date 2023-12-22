@@ -1,34 +1,51 @@
 #!/bin/bash
 
-compose_file_name="docker-compose.dev.yaml"
-compose_file_path="${PROJECT_ROOT}/${compose_file_name}"
 
 if [ -z "$PROJECT_ROOT" ]; then
-    echo "Erro ao ler a raiz do projeto. Você executou \"./bin/config.sh\"?" >&2
+    echo "Erro ao ler a raiz do projeto. Você executou \"source ./bin/config.sh\"?" >&2
     exit 1
 fi
 
-exibir_help() {
+compose_file_name="docker-compose.dev.yaml"
+compose_file_path="${PROJECT_ROOT}/${compose_file_name}"
+project_version=$(jq -r ".version" "${PROJECT_ROOT}/package.json")
+
+exibir_cabecalho() {
+    echo "########## LPI ##########"
+}
+
+exibir_ajuda() {
     if [ ! -e "${PROJECT_ROOT}/package.json" ]; then
         echo "Não foi possível encontrar o arquivo package.json"
         exit 1
     fi
-
-    local project_version
-    project_version=$(jq -r ".version" "${PROJECT_ROOT}/package.json")
-
-    echo "########## LPI ##########"
+    
+    exibir_cabecalho
+    echo ""
+    echo "Cli para facilitar o gerenciamento de containers docker e dependencias para o desenvolvimento aplicativo"
     echo ""
     echo "Versão do projeto:        ${project_version}"
     echo "Pasta raiz do projeto:    ${PROJECT_ROOT}"
     echo ""
+    echo "O Lpi NÂO pode ser executado dentro de um container docker, deve ser executado fora apenas para ajudar o gerenciamento dos containers"
+    echo ""
     echo "Sub-comandos:"
-    echo "  up          Inicia a aplicação com a configuração do arquivo docker-compose.dev.yaml"
-    echo "  down        Para a aplicação com a configuração do arquivo docker-compose.dev.yaml"
-    echo "  ps          Inspeciona os container em execução com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  up                  Inicia a aplicação com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  down                Para a aplicação com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  ps                  Inspeciona os container em execução com a configuração do arquivo docker-compose.dev.yaml"
+    echo "  install | i         Instala dependencia usando npm"
     echo ""
     echo "Opções:"
     echo "  -h          Exibe o menu de ajuda"
+    echo "  -v          Exibe a versão do projeto"
+}
+
+exibir_versao() {
+    
+    exibir_cabecalho
+    echo ""
+    echo "Versão do projeto:        ${project_version}"
+    
 }
 
 if [ ! -e "$compose_file_path" ]; then
@@ -39,9 +56,13 @@ fi
 if [ ! -z "$1" ]; then
     case $1 in
         -h)
-            exibir_help
+            exibir_ajuda
             exit 0
             ;;
+        -v)
+            exibir_versao
+            exit 0
+        ;;
     esac
 fi
 
@@ -59,7 +80,20 @@ case $1 in
     ps)
         docker compose -f "$compose_file_path" ps
         ;;
+    install|i)
+        echo "Instalando dependendia ${2} com npm"
+        npm install $2 &> /dev/null
+
+        if [ $? -eq 0 ]; then
+            echo "Instalado com sucesso"
+            exit 0
+        else
+            echo "Erro ao instalar dependencia com o nome ${2}"
+            exit 1
+        fi
+        ;;
     *)
         echo "Argumento desconhecido. Digite lpi -h para obter ajuda."
+        exit 1
         ;;
 esac

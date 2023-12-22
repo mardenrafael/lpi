@@ -1,35 +1,48 @@
-import { Inject, Injectable, Optional, Scope } from '@nestjs/common';
+import { Injectable, LogLevel } from '@nestjs/common';
+import { Request } from 'express';
 
 @Injectable()
 export class LogService {
-  public log(name: string, msg: string) {
-    const pid = process.pid;
-    const { date, time } = this.getDateFormated();
+  public log(name: string, request: Request, msg: string) {
+    const logMsg = this.constructLogMsg(name, request, msg, 'log');
 
-    console.log(
-      `[Application] ${pid}  - ${date}, ${time}\t LOG [${name}] ${msg}`,
-    );
+    console.log(logMsg);
   }
 
-  public error(msg: string) {
-    const pid = process.pid;
-    const { date, time } = this.getDateFormated();
+  public error(name: string, request: Request, msg: string) {
+    const logMsg = this.constructLogMsg(name, request, msg, 'error');
 
-    console.error(`ERROR ${date} ${time} [${pid}] - ${msg}`);
+    console.log(logMsg);
   }
 
-  public warning(msg: string) {
-    const pid = process.pid;
-    const { date, time } = this.getDateFormated();
+  public warning(name: string, request: Request, msg: string) {
+    const logMsg = this.constructLogMsg(name, request, msg, 'warn');
 
-    console.error(`WARN ${date} ${time} [${pid}] - ${msg}`);
+    console.log(logMsg);
   }
 
-  public debug(msg: string) {
-    const pid = process.pid;
+  public debug(name: string, request: Request, msg: string) {
+    const logMsg = this.constructLogMsg(name, request, msg, 'debug');
+
+    console.log(logMsg);
+  }
+
+  private constructLogMsg(
+    name: string,
+    request: Request,
+    msg: string,
+    logLevel: LogLevel,
+  ): string {
+    let logMsg = '[Application]';
     const { date, time } = this.getDateFormated();
 
-    console.error(`DEBUG ${date} ${time} [${pid}] - ${msg}`);
+    if (request) {
+      const methodRequest = request.method;
+      logMsg += ` [ ${methodRequest} ]`;
+    }
+    logMsg += ` - ${date}, ${time}\t ${logLevel.toUpperCase()} [${name}] ${msg}`;
+
+    return logMsg;
   }
 
   private getDateFormated(): {

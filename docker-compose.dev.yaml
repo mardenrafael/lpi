@@ -1,13 +1,13 @@
-version: '3.1'
+version: '3'
 
 services:
   db:
     image: postgres:16
     container_name: login-db
     ports:
-      - 5432:5432
+      - '172.17.0.1:5432:5432'
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
     env_file:
       - .env
     healthcheck:
@@ -33,7 +33,7 @@ services:
       retries: 3
       start_period: 5s
     ports:
-      - 127.0.0.1:3000:3000
+      - '172.17.0.1:3000:3000'
     volumes:
       - ./:/home/node/login-api
     networks:
@@ -43,8 +43,37 @@ services:
         condition: 'service_healthy'
         restart: true
 
+  pg-admin:
+    image: elestio/pgadmin
+    restart: always
+    container_name: pg-admin
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -O - http://pg-admin:${PGADMIN_LISTEN_PORT}/misc/ping',
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    ports:
+      - '172.17.0.1:8080:${PGADMIN_LISTEN_PORT}'
+    volumes:
+      - pg-data:/pgadmin4/servers.json
+    networks:
+      - app-network
+
+    depends_on:
+      db:
+        condition: 'service_healthy'
+        restart: true
+
 networks:
   app-network:
 
 volumes:
-  db_data:
+  db-data:
+  pg-data:

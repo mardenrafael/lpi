@@ -69,7 +69,7 @@ fi
 case $1 in
     up)
         echo "Iniciando containers com configuração do ${compose_file_name}"
-        docker compose -f "$compose_file_path" up --detach
+        docker compose -f "$compose_file_path" up --detach --wait
         echo "Containers iniciados com sucesso."
         ;;
     down)

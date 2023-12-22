@@ -10,7 +10,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user-response.dto';
 import { UserService } from './user.service';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
-import { IsPublic } from 'src/is-public/is-public.decorator';
+import { IsPublic } from 'src/decorator/is-public.decorator';
 
 @Controller('user')
 export class UserController {

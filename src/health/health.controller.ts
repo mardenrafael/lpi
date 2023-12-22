@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { HealthCheckResponseDto } from './dto/health-check-response.dto';
-import { IsPublic } from 'src/is-public/is-public.decorator';
+import { IsPublic } from 'src/decorator/is-public.decorator';
 
 @Controller('health')
 export class HealthController {

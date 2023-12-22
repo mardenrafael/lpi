@@ -7,20 +7,24 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { IS_PUBLIC } from 'src/is-public/is-public.decorator';
 import { UserService } from 'src/user/user.service';
 import { UserInfo } from './entities/user-info.entity';
 import { Constants } from 'src/constants/constants';
+import { IS_PUBLIC } from 'src/decorator/is-public.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
-    private readonly reflector: Reflector,
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if (this.reflector == undefined) {
+      this.reflector = new Reflector();
+    }
+
     const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC, [
       context.getHandler(),
       context.getClass(),

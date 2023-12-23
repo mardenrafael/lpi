@@ -5,6 +5,6 @@ import { LogInterceptor } from './log/log.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.APPLICATION_PORT);
 }
 bootstrap();

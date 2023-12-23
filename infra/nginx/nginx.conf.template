@@ -1,0 +1,31 @@
+upstream api {
+    server api:${APPLICATION_PORT} max_fails=3 fail_timeout=15s;
+}
+
+upstream pg-admin {
+    server pg-admin:${PGADMIN_LISTEN_PORT};
+}
+
+server {
+    listen       ${NGINX_APP_PORT};
+    server_name  localhost;
+
+    access_log  /var/log/nginx/api.access.log  main;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://api;
+    }
+}
+
+server {
+    listen       ${NGINX_ADMIN_PORT};
+    server_name  localhost;
+
+    access_log  /var/log/nginx/admin.access.log  main;
+
+    location / {
+        proxy_pass http://pg-admin;
+    }
+}

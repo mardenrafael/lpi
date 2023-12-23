@@ -1,4 +1,4 @@
-FROM node
+FROM node as DEV
 
 USER node
 WORKDIR /home/node/login-api

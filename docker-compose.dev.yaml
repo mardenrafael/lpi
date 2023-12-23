@@ -24,6 +24,7 @@ services:
   api:
     build:
       context: .
+      target: DEV
     container_name: login-api
     env_file:
       - .env
@@ -67,12 +68,9 @@ services:
       start_period: 20s
     ports:
       - ${PGADMIN_LISTEN_PORT}
-    volumes:
-      - ./infra/pg-admin/servers.json:/pgadmin4/servers.json
     networks:
       app-network:
         ipv4_address: 10.1.0.22
-
     depends_on:
       db:
         condition: 'service_healthy'

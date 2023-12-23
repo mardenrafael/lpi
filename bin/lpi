@@ -70,7 +70,14 @@ case $1 in
     up)
         echo "Iniciando containers com configuração do ${compose_file_name}"
         docker compose -f "$compose_file_path" up --detach --wait
-        echo "Containers iniciados com sucesso."
+        if [ $? -eq 0 ]; then
+            echo "Containers iniciados com sucesso."
+            exit 0
+        else
+            echo "Erro ao iniciar containers, por favor olhe os logs dos containers."
+            exit 1
+        fi
+        
         ;;
     down)
         echo "Parando containers com configuração do ${compose_file_name}"

@@ -7,7 +7,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserDto } from './dto/user-response.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 import { UserService } from './user.service';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { IsPublic } from 'src/decorator/is-public.decorator';
@@ -23,10 +23,10 @@ export class UserController {
   }
 
   @Get()
-  async getAll(): Promise<UserDto[]> {
+  async getAll(): Promise<UserResponseDto[]> {
     const users = await this.userService.getAll();
 
-    const usersDtos = UserDto.fromEntityList(users);
+    const usersDtos = UserResponseDto.fromEntityList(users);
 
     return usersDtos;
   }

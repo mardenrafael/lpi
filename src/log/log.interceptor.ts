@@ -22,9 +22,7 @@ export class LogInterceptor implements NestInterceptor {
     this.logService.log(
       LogInterceptor.name,
       request,
-      `Requesição feita em -> ${request.url} ${
-        userInfo ? `pelo usuario ${userInfo.nome}` : ' [ endpoint publico ]'
-      }`,
+      `${userInfo ? `[${userInfo.nome}]` : '[endpoint publico]'}`,
     );
 
     return next.handle();

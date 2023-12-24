@@ -33,14 +33,18 @@ export class LogService {
     msg: string,
     logLevel: LogLevel,
   ): string {
-    let logMsg = '[Application]';
+    let logMsg = '';
     const { date, time } = this.getDateFormated();
 
     if (request) {
+      const url = request.url;
       const methodRequest = request.method;
-      logMsg += ` [ ${methodRequest} ]`;
+      const agent = request.headers['user-agent'];
+      const host = request.headers['host'];
+
+      logMsg += `[${methodRequest}] - [${url}] - [${agent}] - [${host}]`;
     }
-    logMsg += ` - ${date}, ${time}\t ${logLevel.toUpperCase()} [${name}] ${msg}`;
+    logMsg += ` - ${date}, ${time} ${logLevel.toUpperCase()} [${name}] ${msg}`;
 
     return logMsg;
   }

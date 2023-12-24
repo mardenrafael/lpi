@@ -6,69 +6,65 @@ import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class UserService {
-  private readonly users: User[] = [];
-
   constructor(
     private readonly logService: LogService,
     private readonly prismaService: PrismaService,
   ) {}
 
   async findOneByEmail(userEmail: string): Promise<User> {
-    const user: User[] = this.users.filter(({ email }) => email === userEmail);
-
-    if (user.length === 0) {
-      throw new NotFoundException();
-    }
-
-    return user[0];
-  }
-
-  async findOneById(userId: number): Promise<User> {
-    const user: User[] = this.users.filter(({ id }) => id === userId);
-
-    if (user.length === 0) {
-      throw new NotFoundException();
-    }
-
-    return user[0];
-  }
-
-  async getAll(): Promise<User[]> {
-    this.logService.log(UserService.name, null, 'kaskdas');
-    return this.users;
-  }
-
-  async create(createUserDto: CreateUserDto): Promise<void> {
-    this.prismaService.user.create({
-      data: {
-        password: '',
-        email: '',
-        name: '',
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        email: userEmail,
       },
     });
 
-    try {
-      await this.findOneByName(createUserDto.username);
-    } catch (err) {
-      if (err instanceof NotFoundException == false) {
-        throw err;
-      }
-    }
-
-    const lastUser: User | undefined = this.users[this.users.length - 1];
-    const user: User = CreateUserDto.toEntity(createUserDto);
-    user.id = lastUser === undefined ? 0 : lastUser.id + 1;
-
-    this.users.push(user);
-  }
-
-  async findOneByName(username: string): Promise<User> {
-    const user: User[] = this.users.filter(({ name }) => name === username);
-
-    if (user.length === 0) {
+    if (!user) {
       throw new NotFoundException();
     }
 
-    return user[0];
+    return user;
+  }
+
+  async findOneById(userId: number): Promise<User> {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
+  }
+
+  async getAll(): Promise<User[]> {
+    const users = await await this.prismaService.user.findMany();
+    return users;
+  }
+
+  async create({ email, password, username }: CreateUserDto): Promise<void> {
+    await this.prismaService.user.create({
+      data: {
+        password,
+        email,
+        name: username,
+      },
+    });
+  }
+
+  async findOneByName(username: string): Promise<User> {
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        name: username,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 }

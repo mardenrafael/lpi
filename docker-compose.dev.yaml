@@ -24,6 +24,7 @@ services:
       context: .
       target: DEV
     container_name: login-api
+    restart: always
     env_file:
       - .env
     healthcheck:

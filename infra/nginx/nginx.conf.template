@@ -6,6 +6,10 @@ upstream pg-admin {
     server pg-admin:${PGADMIN_LISTEN_PORT};
 }
 
+upstream portainer {
+    server portainer:${PORTAINER_PORT};
+}
+
 server {
     listen       ${NGINX_APP_PORT};
     server_name  localhost;
@@ -14,7 +18,6 @@ server {
 
     location / {
         proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
         proxy_pass http://api;
     }
 }
@@ -27,5 +30,16 @@ server {
 
     location / {
         proxy_pass http://pg-admin;
+    }
+}
+
+server {
+    listen       ${NGINX_PORTAINER_PORT};
+    server_name  localhost;
+
+    access_log  /var/log/nginx/portainer.access.log  main;
+
+    location / {
+        proxy_pass http://portainer;
     }
 }

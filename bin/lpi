@@ -27,7 +27,7 @@ exibir_ajuda() {
     echo "Versão do projeto:        ${project_version}"
     echo "Pasta raiz do projeto:    ${PROJECT_ROOT}"
     echo ""
-    echo "O Lpi NÂO pode ser executado dentro de um container docker, deve ser executado fora apenas para ajudar o gerenciamento dos containers"
+    echo "O Lpi NÃO pode ser executado dentro de um container docker, deve ser executado fora apenas para ajudar o gerenciamento dos containers"
     echo ""
     echo "Sub-comandos:"
     echo "  up                  Inicia a aplicação com a configuração do arquivo docker-compose.dev.yaml"
@@ -99,6 +99,17 @@ case $1 in
             exit 1
         fi
         ;;
+    restart)
+        echo "Reiniciando containers"
+        docker compose -f "$compose_file_path" restart
+        if [ $? -eq 0 ]; then
+            echo "Containers reiniciados com sucesso."
+            exit 0
+        else
+            echo "Erro ao reiniciar containers."
+            exit 1
+        fi
+    ;;
     *)
         echo "Argumento desconhecido. Digite lpi -h para obter ajuda."
         exit 1

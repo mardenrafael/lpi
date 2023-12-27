@@ -48,7 +48,7 @@ services:
         restart: true
 
   pg-admin:
-    image: elestio/pgadmin
+    image: dpage/pgadmin4
     restart: always
     container_name: login-api-pg-admin
     env_file:
@@ -70,6 +70,8 @@ services:
       db:
         condition: 'service_healthy'
         restart: true
+    volumes:
+      - ./infra/pgadmin/servers.json:/pgadmin4/servers.json
 
   proxy:
     image: nginx
